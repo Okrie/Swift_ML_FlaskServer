@@ -9,7 +9,7 @@ Version : 0.4
 from flask import request, Blueprint, jsonify
 import os, sys
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from service.userData import getUserid, getUserDetail, getUserFriends, getuserGames, getuserDetails
+from service.userData import getUseridService, getUserDetailService, getUserFriendsService, getuserGamesService, getuserDetailsService
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
@@ -20,7 +20,7 @@ user = Blueprint('user', __name__, url_prefix='/user')
 @user.route('/', methods = ['GET'])
 def index():
     try:
-        result = getUserid(request.args.get('userid'))
+        result = getUseridService(request.args.get('userid'))
     except:
         return jsonify({"result" : {"response_code" : 500, "reqdata" : request.args.get('userid')}})
     return result
@@ -31,7 +31,7 @@ def index():
 @user.route('/getuser', methods = ['GET'])
 def getuser():
     try:
-        result = getUserDetail(request.args.get('steamid'))
+        result = getUserDetailService(request.args.get('steamid'))
     except:
         return jsonify({"result" : {"response_code" : 401, "reqdata" : request.args.get('steamid')}})
     return result
@@ -42,7 +42,7 @@ def getuser():
 @user.route('/getuserfriends', methods = ['GET'])
 def getuserFriends():
     try:
-        result = getUserFriends(request.args.get('steamid'))
+        result = getUserFriendsService(request.args.get('steamid'))
     except:
         return jsonify({"result" : {"response_code" : 401, "reqdata" : request.args.get('steamid')}})
     return result
@@ -54,7 +54,7 @@ def getuserFriends():
 @user.route('/getusergames', methods = ['GET'])
 def getuserGames():
     try:
-        result = getuserGames(request.args.get('steamid'))
+        result = getuserGamesService(request.args.get('steamid'))
     except:
         return jsonify({"result" : {"response_code" : 500, "reqdata" : request.args.get('steamid')}})
     return result
@@ -67,7 +67,7 @@ def getuserGames():
 def getuserDetails():
     steamid = request.args.get('steamid')
     try:
-        result = getuserDetails(steamid)
+        result = getuserDetailsService(steamid)
     except:
         return jsonify({"result" : {"response_code" : 500, "reqdata" : steamid}})
-    return jsonify({"result" : {"retdata" : result}})
+    return jsonify({"result" : {"retdata" : [result]}})
