@@ -1,5 +1,15 @@
+# -*- coding: utf8 -*-
+"""
+Date : 2023-09-21 03:00
+Author : Okrie
+Description : controller/user.py 분리
+Version : 0.4
+"""
+
 from flask import request, Blueprint, jsonify
-from service.userData import getUserid, getUserDetail, getUserFriends
+import os, sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+from service.userData import getUserid, getUserDetail, getUserFriends, getuserGames, getuserDetails
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
@@ -12,7 +22,7 @@ def index():
     try:
         result = getUserid(request.args.get('userid'))
     except:
-        return jsonify({"result" : {"response_code" : 401, "reqdata" : request.args.get('userid')}})
+        return jsonify({"result" : {"response_code" : 500, "reqdata" : request.args.get('userid')}})
     return result
 
 # User의 상세정보
@@ -32,7 +42,7 @@ def getuser():
 @user.route('/getuserfriends', methods = ['GET'])
 def getuserFriends():
     try:
-        result = getUserFriends(steam_id=request.args.get('steamid'))
+        result = getUserFriends(request.args.get('steamid'))
     except:
         return jsonify({"result" : {"response_code" : 401, "reqdata" : request.args.get('steamid')}})
     return result
@@ -44,7 +54,7 @@ def getuserFriends():
 @user.route('/getusergames', methods = ['GET'])
 def getuserGames():
     try:
-        result = steam.users.get_owned_games(steam_id=request.args.get('steamid'))
+        result = getuserGames(request.args.get('steamid'))
     except:
         return jsonify({"result" : {"response_code" : 500, "reqdata" : request.args.get('steamid')}})
     return result
@@ -57,9 +67,7 @@ def getuserGames():
 def getuserDetails():
     steamid = request.args.get('steamid')
     try:
-        userprofile = steam.users.get_user_details(steam_id=steamid)
-        level = steam.users.get_user_steam_level(steam_id=steamid)
-        badges = steam.users.get_user_badges(steam_id=steamid)
+        result = getuserDetails(steamid)
     except:
         return jsonify({"result" : {"response_code" : 500, "reqdata" : steamid}})
-    return jsonify({"result" : {"retdata" : [{"steamid" : steamid, "level" : level, 'badges' : badges, 'userprofile' : userprofile}]}})
+    return jsonify({"result" : {"retdata" : result}})

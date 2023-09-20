@@ -19,6 +19,9 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 app = Flask(__name__)
 
+KEY = config("STEAM_API_KEY")
+steam = Steam(KEY)
+
 from app import main as main
 from controller.user import user as user
 from controller.game import game as game
@@ -27,8 +30,6 @@ app.register_blueprint(main)
 app.register_blueprint(user)
 app.register_blueprint(game)
 
-
 if __name__ == '__main__':
-    KEY = config("STEAM_API_KEY")
-    steam = Steam(KEY)
+    
     app.run(host=config("HOSTNAME"), port=config("PORT"), debug=True)

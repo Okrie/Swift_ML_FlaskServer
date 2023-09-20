@@ -1,5 +1,16 @@
+# -*- coding: utf8 -*-
+"""
+Date : 2023-09-21 03:00
+Author : Okrie
+Description : controller/game.py 분리
+Version : 0.4
+"""
+
 from flask import request, Blueprint, jsonify
 from module.bestGameCrawling import bestGame
+import os, sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+from service.gameData import searchGames, searchGamesId
 
 game = Blueprint('game', __name__, url_prefix='/game')
 
@@ -9,7 +20,7 @@ game = Blueprint('game', __name__, url_prefix='/game')
 def searchGames():
     search = request.args.get('search')
     try:
-        result = steam.apps.search_games(search, country="KR")
+        result = searchGames(search)
     except:
         return jsonify({"result" : {"response_code" : 500, "reqdata" : search}})
     return jsonify({"result" : [{"retdata" : result}]})
@@ -18,9 +29,8 @@ def searchGames():
 @game.route('/searchgamesid', methods = ['GET'])
 def searchGamesId():
     search = request.args.get('searchid')
-
     try:
-        result = steam.apps.get_app_details(app_id=int(search), country="KR")
+        result = searchGamesId(app_id=int(search))
     except:
         return jsonify({"result" : {"response_code" : 500, "reqdata" : search}})
     return jsonify({"result" : [{"retdata" : result}]})
