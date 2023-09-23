@@ -8,13 +8,29 @@ Version : 0.4
 
 from flask import Blueprint
 from . import steam
+from bs4 import BeautifulSoup
+import urllib.request as req
 
 gameservice = Blueprint('gameservice', __name__)
 
 # Searching Games : Str
-def searchGames(search):
+def searchGamesService(search):
     return steam.apps.search_games(search, country="KR")
 
 # Searching Games : App Id
-def searchGamesId(search):
+def searchGamesIdService(search):
     return steam.apps.get_app_details(app_id=int(search), country="KR")
+
+# Searching Games : App Id
+def searchGamesIdReService(search):
+    url = f"https://store.steampowered.com/app/{search}"
+
+    res = req.urlopen(url)
+    soup = BeautifulSoup(res, "html.parser")
+
+    appid = search
+    img_link = soup.select_one('#gameHeaderImageCtn > img').attrs['src']
+    name = soup.select_one('#appHubAppName').text
+    price = soup.select_one('div.game_purchase_action div.game_purchase_price.price').text.strip()
+
+    return appid, img_link, name, price
