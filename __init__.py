@@ -9,17 +9,16 @@ Version : 0.2
 # init py 분리
 
 from flask import Flask
-from decouple import config
 from steam import Steam
 import os, sys
 import joblib
 import requests
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
-
 app = Flask(__name__)
 
-KEY = config("STEAM_API_KEY")
+
+KEY = os.environ.get("STEAM_API_KEY")
 steam = Steam(KEY)
 
 from app import main as main
@@ -31,5 +30,5 @@ app.register_blueprint(user)
 app.register_blueprint(game)
 
 if __name__ == '__main__':
+    app.run(host=os.environ.get("FLASK_RUN_HOST"), port=os.environ.get("FLASK_RUN_PORT"), debug=True)
     
-    app.run(host=config("HOSTNAME"), port=config("PORT"), debug=True)
