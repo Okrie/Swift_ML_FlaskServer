@@ -8,7 +8,7 @@ res = req.urlopen(url)
 soup = BeautifulSoup(res, "html.parser")
 
 
-def bestGame():
+def bestGameService():
     dict_list = {'appid' : [], 'detail_link' : [], 'name' : [], 'price' : []}
 
     resp = soup.select('div.tab_content > a.tab_item')

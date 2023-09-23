@@ -29,6 +29,6 @@ main = Blueprint('main', __name__, url_prefix='/')
 def getRsaKey():
     username = request.args.get('username')
     url = f'https://steamcommunity.com/login/getrsakey/?username={username}'
-    response = requests.get(url=url)
+    response = request.get(url=url)
     print(response.text)
     return response.text
