@@ -10,6 +10,7 @@ from flask import Blueprint
 from . import steam
 from bs4 import BeautifulSoup
 import urllib.request as req
+import json
 
 gameservice = Blueprint('gameservice', __name__)
 
@@ -19,7 +20,8 @@ def searchGamesService(search):
 
 # Searching Games : App Id
 def searchGamesIdService(search):
-    return steam.apps.get_app_details(app_id=int(search), country="KR")
+    return steam.apps.get_app_details(app_id=search)
+
 
 # Searching Games : App Id
 def searchGamesIdReService(search):
@@ -33,4 +35,7 @@ def searchGamesIdReService(search):
     name = soup.select_one('#appHubAppName').text
     price = soup.select_one('div.game_purchase_action div.game_purchase_price.price').text.strip()
 
-    return appid, img_link, name, price
+    response = req.urlopen(f'https://store.steampowered.com/api/appdetails?appids={search}')
+    res = json.load(response)
+    detail_info = res[f'{search}']['data']['about_the_game']
+    return appid, img_link, name, price, detail_info

@@ -10,6 +10,8 @@ from flask import request, Blueprint, jsonify
 import os, sys
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from service.userData import getUseridService, getUserDetailService, getUserFriendsService, getuserGamesService, getuserDetailsService
+from .recommend import recommended, save_to_csv
+import pandas as pd
 
 user = Blueprint('user', __name__, url_prefix='/user')
 
@@ -29,11 +31,25 @@ def index():
 # 2023-09-20 v0.2 module userData 분리
 # 2023-09-21 v0.3 controller로 분리
 @user.route('/getuser', methods = ['GET'])
-def getuser():
+def getuser(LOGIN=False):
+    steamid = request.args.get('steamid')
     try:
-        result = getUserDetailService(request.args.get('steamid'))
+        request.args.get('login')
+        LOGIN = True
     except:
-        return jsonify({"result" : {"response_code" : 401, "reqdata" : request.args.get('steamid')}})
+        LOGIN = False
+
+    # try:
+    result = getUserDetailService(steamid)
+    if LOGIN:
+        resp = getuserGamesService(steamid)
+        res = save_to_csv(steamid, resp)
+        if res:
+            return recommended(steamid)
+        else:
+            return jsonify({"result" : {"response_code" : 402, "reqdata" : steamid}})
+    # except:
+    #     return jsonify({"result" : {"response_code" : 401, "reqdata" : steamid}})
     return result
 
 # User의 친구목록

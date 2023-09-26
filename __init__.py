@@ -3,7 +3,7 @@
 Date : 2023-09-21 02:00
 Author : Okrie
 Description : __init__.py Setting
-Version : 0.2
+Version : 0.3
 """
 
 # init py 분리
@@ -24,11 +24,15 @@ steam = Steam(KEY)
 from app import main as main
 from controller.user import user as user
 from controller.game import game as game
+# v0.3 recommend 추가
+from controller.recommend import recommend as recommend
 
 app.register_blueprint(main)
 app.register_blueprint(user)
 app.register_blueprint(game)
+# v0.3 recommend 추가
+app.register_blueprint(recommend)
 
 if __name__ == '__main__':
-    app.run(host=os.environ.get("FLASK_RUN_HOST"), port=os.environ.get("FLASK_RUN_PORT"), debug=True)
+    app.run(host=os.environ.get("FLASK_RUN_HOST"), port=os.environ.get("FLASK_RUN_PORT"), debug=os.environ.get("FLASK_DEBUG"))
     
