@@ -16,10 +16,10 @@ import numpy as np
 import datetime
 import re
 import urllib.request as req
+from bs4 import BeautifulSoup
 
 
 recommendedservice = Blueprint('recommendedservice', __name__)
-
 
 # 유저의 보유 게임 및 상세정보 가공으로 연관성 분석
 # 장르 기반으로 추천
@@ -29,7 +29,7 @@ def getUserownRecommendService(steamid, MAX_SIZE=50):
     return_dict = []
     k = 0
 
-    # 최대값이 100 user 보유게임 체크하여 개수 정의
+    # 최대값이 50 user 보유게임 체크하여 개수 정의
     if len(user_df) > MAX_SIZE:
         MAX_SIZE = 50
     else:
@@ -66,7 +66,7 @@ def getUserownRecommendService(steamid, MAX_SIZE=50):
     rec_df.columns = columns
 
     # 유저 데이터와 합치기
-    user_concat = pd.merge(user_df, rec_df)
+    user_concat = pd.merge(user_df[:MAX_SIZE], rec_df)
 
     # languages
     # Eng, Kor 포함 유무 확인
@@ -194,7 +194,10 @@ def getUserownRecommendService(steamid, MAX_SIZE=50):
     temp.append(association_rules_df["antecedents"].apply(lambda x: ', '.join(list(x))).astype("unicode"))
     temp.append(association_rules_df["consequents"].apply(lambda x: ', '.join(list(x))).astype("unicode"))
 
-    return jsonify({'result' : {'rule' : temp[0][0], 'to' : temp[0][1], 'support' : str(round(association_rules_df['support'][0],2)), 'confidence' : str(round(association_rules_df['confidence'][0],2)), 'lift' : str(round(association_rules_df['lift'][0],2))}})
+    return_list = [temp[0][0], temp[0][1]]
+    
+    return recommendGameList(return_list)
+    # return jsonify({'result' : {'rule' : temp[0][0], 'to' : temp[0][1], 'support' : str(round(association_rules_df['support'][0],2)), 'confidence' : str(round(association_rules_df['confidence'][0],2)), 'lift' : str(round(association_rules_df['lift'][0],2))}})
 
 # 유저 데이터 정제
 def save_to_csvService(steamid, result):
@@ -245,3 +248,35 @@ def save_to_csvService(steamid, result):
     except:
         return False
     return True
+
+# Recommend Game List
+def recommendGameList(result_json):
+    url = 'https://store.steampowered.com/search/'
+
+    res = req.urlopen(url)
+    soup = BeautifulSoup(res, 'html.parser')
+    tag_list = [result_json[0], result_json[1]]
+    tags = []
+    for tag in tag_list:
+        tags = soup.select('#TagFilter_Container  span')
+
+    tag_value = []
+
+    i = 1
+    while len(tag_value) < 2:
+        tags = soup.select_one(f'#TagFilter_Container div:nth-child({i}) span.tab_filter_control_label').text.strip()
+        if tags in tag_list:
+            tag = soup.select_one(f'#TagFilter_Container div:nth-child({i}) span.tab_filter_control.tab_filter_control_include').attrs['data-value']
+            tag_value.append(tag)
+        i+=1
+
+    url = f'https://store.steampowered.com/search/?tags={tag_value[0]},{tag_value[1]}'
+    res = req.urlopen(url)
+    soup = BeautifulSoup(res, 'html.parser')
+
+    game_list = []
+    for i in range(1, 6):
+        game = soup.select_one(f'#search_resultsRows > a:nth-child({i})')
+        game_list.append(game.attrs['data-ds-appid'])
+
+    return jsonify({'result' : {'appid' : game_list}})

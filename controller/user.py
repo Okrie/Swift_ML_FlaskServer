@@ -45,25 +45,24 @@ def getuser():
 def loginUser(LOGIN=False):
     userid = request.args.get('userid')
 
-    # try:
-    result = getUseridService(userid)
-    steamid = result['player']['steamid']
-    LOGIN = True
+    try:
+        result = getUseridService(userid)
+        steamid = result['player']['steamid']
+        LOGIN = True
 
-    result = getUserDetailService(steamid)
-    steamid = result['player']['steamid']
+        result = getUserDetailService(steamid)
+        steamid = result['player']['steamid']
+        if LOGIN:
+            resp = getuserGamesService(steamid)
+            res = save_to_csv(steamid, resp)
+            if res:
+                return recommended(steamid)
+            else:
+                return jsonify({"result" : {"response_code" : 402, "reqdata" : steamid}})
+    except:
+        LOGIN = False
 
-    if LOGIN:
-        resp = getuserGamesService(steamid)
-        res = save_to_csv(steamid, resp)
-        if res:
-            return recommended(steamid)
-        else:
-            return jsonify({"result" : {"response_code" : 402, "reqdata" : steamid}})
-    # except:
-    #     LOGIN = False
-
-    return result
+    return jsonify({'result' : {'reqdata' : userid, 'response_code' : 429}})
 
 
 # User의 친구목록

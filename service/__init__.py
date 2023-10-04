@@ -6,8 +6,10 @@ Description : service/__init__.py Setting
 Version : 0.2
 """
 
-from decouple import config
+from dotenv import load_dotenv
 from steam import Steam
+import os
 
-KEY = config("STEAM_API_KEY")
+
+KEY = os.environ.get("STEAM_API_KEY")
 steam = Steam(KEY)

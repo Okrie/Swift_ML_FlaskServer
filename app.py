@@ -12,23 +12,3 @@ from flask import jsonify, request, Blueprint
 from flask import current_app as app
 
 main = Blueprint('main', __name__, url_prefix='/')
-
-# @app.route('/iris', methods = ['GET'])
-# def iris():
-#     sepalLength = float(request.args.get('SepalLength'))
-#     sepalWidth = float(request.args.get('SepalWidth'))
-#     petalLength = float(request.args.get('PetalLength'))
-#     petalWidth = float(request.args.get('PetalWidth'))
-    
-#     clf = joblib.load('Flask/data/rf_iris.h5')
-#     pred = clf.predict([[sepalLength, sepalWidth, petalLength, petalWidth]])
-#     return jsonify([{'result' : pred[0][:5]}])
-
-# get rsa Key
-@main.route('/rstest')
-def getRsaKey():
-    username = request.args.get('username')
-    url = f'https://steamcommunity.com/login/getrsakey/?username={username}'
-    response = request.get(url=url)
-    print(response.text)
-    return response.text

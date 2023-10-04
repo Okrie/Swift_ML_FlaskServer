@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 import urllib.request as req
 import json
 
+
 gameservice = Blueprint('gameservice', __name__)
 
 # Searching Games : Str
