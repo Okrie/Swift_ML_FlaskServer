@@ -31,16 +31,28 @@ def index():
 # 2023-09-20 v0.2 module userData 분리
 # 2023-09-21 v0.3 controller로 분리
 @user.route('/getuser', methods = ['GET'])
-def getuser(LOGIN=False):
+def getuser():
     steamid = request.args.get('steamid')
     try:
-        request.args.get('login')
-        LOGIN = True
+        result = getUserDetailService(steamid)
     except:
-        LOGIN = False
+        return jsonify({"result" : {"response_code" : 401, "reqdata" : steamid}})
+    
+    return result
+
+# 2023-09-27 v0.5 Login 
+@user.route('/login', methods =['GET'])
+def loginUser(LOGIN=False):
+    userid = request.args.get('userid')
 
     # try:
+    result = getUseridService(userid)
+    steamid = result['player']['steamid']
+    LOGIN = True
+
     result = getUserDetailService(steamid)
+    steamid = result['player']['steamid']
+
     if LOGIN:
         resp = getuserGamesService(steamid)
         res = save_to_csv(steamid, resp)
@@ -49,8 +61,10 @@ def getuser(LOGIN=False):
         else:
             return jsonify({"result" : {"response_code" : 402, "reqdata" : steamid}})
     # except:
-    #     return jsonify({"result" : {"response_code" : 401, "reqdata" : steamid}})
+    #     LOGIN = False
+
     return result
+
 
 # User의 친구목록
 # 2023-09-20 v0.2 module userData 분리
