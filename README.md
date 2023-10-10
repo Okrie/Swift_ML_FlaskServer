@@ -2,9 +2,9 @@
  Python Flask로 Swift로 제작한 스팀 게임 추천 어플리케이션에서 요청하는 서버 제작    
 프로젝트 내 필요한 부분 API로 제작
 
-            
-<a href="https://drive.google.com/file/d/1qHqKLu0GyGhnnWPXxShAt8p64OAyyo5H/view?usp=sharing">![cover](https://github.com/Okrie/Swift_ML_FlaskServer/assets/24921229/174c1db5-4a06-4e8b-a2db-69800697e92d)</a>     
 
+<a href="https://drive.google.com/file/d/1qHqKLu0GyGhnnWPXxShAt8p64OAyyo5H/view?usp=sharing">![cover](https://github-production-user-asset-6210df.s3.amazonaws.com/24921229/272438830-174c1db5-4a06-4e8b-a2db-69800697e92d.png)</a>
+    
 ---
 
 ## 기능 설명
